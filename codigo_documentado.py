@@ -2,9 +2,10 @@
 """
 Created on Thu Aug  8 12:09:14 2024
 
-@author: laura
+@author: laura garcia
 """
 
+#Importar librerias
 import os
 import numpy as np
 import rasterio
@@ -71,14 +72,33 @@ def procesar_varias_carpetas(carpetas_tiffs, archivo_shapefile):
     return lista_especies, archivos_problematicos_totales
 
 # Lista de carpetas que contienen los archivos TIFF
-carpetas_tiffs = [
-    "C:/Users/laura/HUMBOLDT/Solicitud/modelos n1",
-    "C:/Users/laura/HUMBOLDT/Solicitud/modelos n2",
-    "C:/Users/laura/HUMBOLDT/Solicitud/modelos natgeo"
-]
+carpetas_tiffs = [] #Instertar rutas de las carpetas con los archivos .tif
 
 # Ruta al archivo shapefile
-archivo_shapefile = "C:/Users/laura/HUMBOLDT/Solicitud/shape/Sekum.shp"
+archivo_shapefile = #Instertar ruta con archivo shape del polígono de interes
+
+# Función para reproyectar el shapefile si su CRS es diferente al CRS de los modelos (EPSG:4326)
+def reproyectar_shapefile(archivo_shapefile, crs_destino):
+    try:
+        with fiona.open(archivo_shapefile, 'r') as source:
+            nuevas_geometrias = []  # Lista para almacenar las geometrías reproyectadas
+
+            # Definir el CRS de origen y destino
+            crs_origen = source.crs
+            crs_destino_proj = CRS(crs_destino)
+            crs_origen_proj = CRS(crs_origen)
+
+            # Transformar las geometrías al nuevo CRS
+            for feature in source:
+                geometria_origen = feature["geometry"]
+                geometria_destino = transform_geom(crs_origen_proj, crs_destino_proj, geometria_origen)
+                nuevas_geometrias.append(geometria_destino)
+
+        return nuevas_geometrias  # Devuelve la lista de geometrías reproyectadas
+    except Exception as e:
+        print(f"Error al procesar el CRS: {e}")
+        return None
+
 
 # Procesa todas las carpetas de TIFFs y obtiene la lista de especies y archivos problemáticos
 lista_especies, archivos_problematicos = procesar_varias_carpetas(carpetas_tiffs, archivo_shapefile)
@@ -91,5 +111,5 @@ if archivos_problematicos:
 
 # Guarda la lista de especies sin duplicados en un archivo CSV
 df_resultado = pd.DataFrame({'Especies': lista_especies})
-df_resultado.to_csv("especies_sin_duplicados.csv", index=False)
-print("Lista de especies guardada en 'especies_sin_duplicados.csv'")
+df_resultado.to_csv("especies_final.csv", index=False)
+print("Lista de especies guardada en 'especies_final.csv'")
