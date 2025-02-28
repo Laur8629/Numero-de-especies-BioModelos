@@ -100,3 +100,64 @@ if __name__ == "__main__":
         num_especies, lista_especies = resultado
         print(f"Número de especies presentes en el área: {num_especies}")
         print("Especies presentes:", lista_especies)
+
+
+# Cruzar con la base de datos
+
+    import pandas as pd
+import os
+
+def cruzar_con_base_datos(lista_especies, ruta_base_datos, ruta_salida=None, separador=","):
+    """
+    Cruza la lista de especies presentes en el área con una base de datos en CSV o TSV.
+    
+    Parámetros:
+    - lista_especies (list): Lista de nombres de especies presentes en el área.
+    - ruta_base_datos (str): Ruta al archivo CSV o TSV con información adicional de especies.
+    - ruta_salida (str, opcional): Ruta del directorio donde se guardará el archivo resultado.
+    - separador (str): Separador del archivo ("," para CSV, "\t" para TSV).
+    
+    Retorna:
+    - Un DataFrame con las especies filtradas y sus datos adicionales.
+    """
+    try:
+        # Cargar la base de datos
+        df = pd.read_csv(ruta_base_datos, sep=separador, dtype=str)
+
+        # Buscar la columna que contiene los nombres de las especies
+        columna_especies = None
+        for col in df.columns:
+            if "especie" in col.lower() or "nombre_cientifico" in col.lower():
+                columna_especies = col
+                break
+
+        if columna_especies is None:
+            raise ValueError("No se encontró una columna con el nombre de la especie en la base de datos.")
+
+        # Filtrar las especies presentes en el área
+        df_filtrado = df[df[columna_especies].isin(lista_especies)]
+
+        if df_filtrado.empty:
+            print("⚠️ No se encontraron coincidencias en la base de datos.")
+        else:
+            # Determinar la ruta de salida
+            if ruta_salida is None:
+                ruta_salida = os.getcwd()  # Directorio actual si no se proporciona ruta
+            ruta_completa = os.path.join(ruta_salida, "especies_por_categoria.csv")
+
+            # Guardar el archivo
+            df_filtrado.to_csv(ruta_completa, index=False, sep=separador)
+            print(f"✅ Archivo guardado en: {ruta_completa}")
+
+        return df_filtrado
+
+    except Exception as e:
+        print(f"❌ Error al procesar la base de datos: {e}")
+        return None
+
+    
+    df_especies_con_categorias = cruzar_con_base_datos(lista_especies, base_datos_csv, ruta_salida)
+
+    if df_especies_con_categorias is not None:
+        print("\n✅ Cruce realizado con éxito. Revisa el archivo generado.")
+
