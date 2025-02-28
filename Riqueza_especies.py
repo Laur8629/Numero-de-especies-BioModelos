@@ -25,7 +25,7 @@ def leer_raster(ruta):
         raise ValueError(f"Error al leer el archivo {ruta}: {e}")
 
 def verificar_y_transformar_crs_shapefile(ruta_shp):
-    """Verifica si el shapefile está en EPSG:4326. Si no, lo transforma y guarda una copia en una carpeta separada."""
+    "Verifica si el shapefile está en EPSG:4326. Si no, lo transforma y guarda"
     try:
         gdf = gpd.read_file(ruta_shp)
         if gdf.crs is None or gdf.crs.to_epsg() != 4326:
@@ -44,7 +44,7 @@ def verificar_y_transformar_crs_shapefile(ruta_shp):
         raise ValueError(f"Error al verificar/transformar el CRS del shapefile {ruta_shp}: {e}")
 
 def limpiar_nombres_tiffs(lista_tiffs):
-    """Limpia los nombres de los archivos TIFF eliminando sufijos no deseados y caracteres especiales."""
+    "Limpia los nombres de los archivos TIFF"
     species_names = set()
     for nombre_archivo in lista_tiffs:
         nombre_limpio = nombre_archivo.replace('_10_MAXENT.tif', '').replace('_veg.tif', '').replace('_pub.tif', '').replace('_con.tif', '').replace('_exp.tif', '').replace('.tif', '').replace('_pub1', ' ').replace('_', ' ')
@@ -52,20 +52,16 @@ def limpiar_nombres_tiffs(lista_tiffs):
     return sorted(species_names)
 
 def especies_en_area(directorios, shapefile):
-    """Devuelve cuántas y cuáles especies tienen distribución en el área del polígono del shapefile."""
+    "Devuelve cuántas y cuáles especies tienen distribución en el polígono del shapefile"
     especies_presentes = []
     archivos_problematicos = []
     archivos = listar_tiffs(directorios)
-    
     if not archivos:
         raise FileNotFoundError("No se encontraron archivos TIFF en los directorios proporcionados.")
-    
     with fiona.open(shapefile, "r") as shapefile_f:
         shapes = [feature["geometry"] for feature in shapefile_f]
-    
     for archivo in archivos:
-        datos, meta, src = leer_raster(archivo)  # Abre el raster
-        
+        datos, meta, src = leer_raster(archivo)  # Abre el raster 
         try:
             out_image, _ = mask(src, shapes, crop=True)  # Usa el raster abierto
             if np.any(out_image > 0):  # Si hay valores positivos en el área
@@ -75,22 +71,16 @@ def especies_en_area(directorios, shapefile):
             archivos_problematicos.append(os.path.basename(archivo))
         finally:
             src.close()  # Cierra el raster después de usarlo
-    
     especies_presentes = limpiar_nombres_tiffs(especies_presentes)
-    
     if archivos_problematicos:
         return len(especies_presentes), especies_presentes, archivos_problematicos
     else:
         return len(especies_presentes), especies_presentes
-
 if __name__ == "__main__":
-    directorios = ["C:/Users/laura/OneDrive - Universidad de los andes/Escritorio/HUMBOLDT/Carnivoros/modelos carnivoros/n2/"]  # Lista de directorios con archivos TIFF, de ser solo uno colocar la unica ruta
-    shapefile = "C:/Users/laura/OneDrive - Universidad de los andes/Escritorio/HUMBOLDT/FPV/especies biomodelos FPV/Nucleo_Desarrollo_Forestal - Bibiana Gómez Valencia/Nucleo_Desarrollo_Forestal.shp"
-    
+    directorios = ["/ruta con archivos .tif"]  # Lista de directorios con archivos TIFF 
+    shapefile = "/ruta archivo shapefile"
     shapefile = verificar_y_transformar_crs_shapefile(shapefile)
-    
     resultado = especies_en_area(directorios, shapefile)
-    
     if len(resultado) == 3:
         num_especies, lista_especies, archivos_problematicos = resultado
         print(f"Número de especies presentes en el área: {num_especies}")
