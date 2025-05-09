@@ -1,4 +1,4 @@
-# README - Análisis de Especies en Área Basado en Rasters
+# Análisis de Especies en Área Basado en Rasters
 
 Este script en Python permite analizar la distribución de especies en un área geográfica definida por un shapefile. Utiliza archivos raster (TIFF) para determinar qué especies están presentes en la región de interés.
 
