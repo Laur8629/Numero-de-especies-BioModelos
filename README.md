@@ -87,6 +87,18 @@ Archivos problemáticos: ['especie_x.tif']
 ```
 
 ---
+## ❗ Errores comunes
+
+Cuando algo sale mal, el código falla con **errores bien definidos** y mensajes claros:
+
+| Código | Excepción             | ¿Cuándo ocurre?                                            | ¿Cómo solucionarlo? |
+|:-----:|------------------------|------------------------------------------------------------|---------------------|
+| E001  | `NoTiffsFoundError`    | No hay archivos `.tif` en los directorios configurados     | Verifica rutas, permisos y extensiones |
+| E002  | `InvalidAOIError`      | El AOI está vacío o el archivo no se pudo leer             | Revisa geometrías y formato; vuelve a exportar el AOI |
+| E003  | `InvalidCRSError`      | El AOI no tiene CRS (`.prj`) o CRS no reconocido           | Asigna un CRS válido (p. ej., EPSG:4326/3116) y guarda de nuevo |
+| E9xx  | `ValueError` genérico  | Otros errores en reproyección/lectura                      | Revisa el mensaje detallado del error y la integridad de los datos |
+
+
 
 ## 📑 Notas Importantes
 
@@ -102,3 +114,4 @@ Este código se distribuye bajo la licencia **MIT** para uso libre y responsable
 Por favor, cita la fuente de los datos originales si utilizas BioModelos u otros proveedores.
 
 ---
+
