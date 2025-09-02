@@ -2,10 +2,9 @@ cff-version: 1.2.0
 message: "Si usas este software, por favor cítalo como se indica abajo."
 title: "Numero de especies BioModelos"
 authors:
-  - family-names: "Apellido"
-    given-names: "Nombre"
-    affiliation: "Tu institución"
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+  - family-names: "Garcia"
+    given-names: "Laura"
+    affiliation: "Instituto de Investigación de Recursos Biológicos Alexander von Humboldt"
 version: "0.1.0"
 doi: "10.5281/zenodo.XXXXXXX"
 date-released: "2025-09-02"
